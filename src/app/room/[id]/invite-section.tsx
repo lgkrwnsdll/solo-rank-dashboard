@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Participant } from "@/lib/types";
+import { Spinner } from "../../spinner";
 
 interface Props {
   roomId: string;
@@ -112,9 +113,9 @@ export function InviteSection({ roomId, participants }: Props) {
               <button
                 onClick={handleConfirmInvite}
                 disabled={inviting}
-                className="bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                className="bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2"
               >
-                {inviting ? "초대중..." : "초대하기"}
+                {inviting ? <><Spinner /> 초대중...</> : "초대하기"}
               </button>
             </div>
           </div>

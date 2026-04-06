@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Participant, RoomConfig } from "@/lib/types";
 import { ADJUST_PRESETS } from "@/lib/constants";
+import { Spinner } from "../../spinner";
 
 interface Props {
   participant: Participant;
@@ -155,16 +156,16 @@ export function ScoreControls({ participant, roomId, config }: Props) {
         <button
           onClick={() => handleResult("win")}
           disabled={processing || participant.is_sleeping}
-          className="flex-1 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg text-lg transition-colors cursor-pointer"
+          className="flex-1 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg text-lg transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
-          승리
+          {processing ? <Spinner /> : "승리"}
         </button>
         <button
           onClick={() => handleResult("lose")}
           disabled={processing || participant.is_sleeping}
-          className="flex-1 bg-danger hover:bg-danger-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg text-lg transition-colors cursor-pointer"
+          className="flex-1 bg-danger hover:bg-danger-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg text-lg transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
-          패배
+          {processing ? <Spinner /> : "패배"}
         </button>
       </div>
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Room, RoomConfig } from "@/lib/types";
+import { Spinner } from "../../spinner";
 
 interface Props {
   room: Room;
@@ -262,9 +263,9 @@ export function RoomSettings({ room, onClose }: Props) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full bg-primary hover:bg-primary-hover disabled:opacity-50 text-white font-medium py-2 rounded-lg transition-colors cursor-pointer"
+          className="w-full bg-primary hover:bg-primary-hover disabled:opacity-50 text-white font-medium py-2 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
-          {saving ? "저장중..." : "설정 저장"}
+          {saving ? <><Spinner /> 저장중...</> : "설정 저장"}
         </button>
       </div>
     </div>

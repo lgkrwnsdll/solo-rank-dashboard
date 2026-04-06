@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { DEFAULT_ROOM_CONFIG } from "@/lib/constants";
+import { Spinner } from "../spinner";
 
 export function CreateRoomButton() {
   const [open, setOpen] = useState(false);
@@ -91,9 +92,9 @@ export function CreateRoomButton() {
           <button
             onClick={handleCreate}
             disabled={creating || !name.trim()}
-            className="bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer"
+            className="bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2"
           >
-            {creating ? "생성중..." : "만들기"}
+            {creating ? <><Spinner /> 생성중...</> : "만들기"}
           </button>
         </div>
       </div>
