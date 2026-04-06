@@ -255,6 +255,7 @@ export function RoomView({
         <RoomSettings
           room={room}
           onClose={() => setSettingsOpen(false)}
+          onSaved={refreshRoom}
         />
       )}
 
@@ -272,6 +273,7 @@ export function RoomView({
           totalScore={teamAScore}
           roomId={room.id}
           config={room.config}
+          isActive={room.status === "active"}
         />
         <TeamBoard
           teamName={room.team_b_name}
@@ -280,6 +282,7 @@ export function RoomView({
           totalScore={teamBScore}
           roomId={room.id}
           config={room.config}
+          isActive={room.status === "active"}
         />
       </div>
 

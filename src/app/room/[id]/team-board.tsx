@@ -12,6 +12,7 @@ interface Props {
   totalScore: number;
   roomId: string;
   config: RoomConfig;
+  isActive: boolean;
 }
 
 export function TeamBoard({
@@ -21,6 +22,7 @@ export function TeamBoard({
   totalScore,
   roomId,
   config,
+  isActive,
 }: Props) {
   const [logPlayerId, setLogPlayerId] = useState<string | null>(null);
   const supabase = createClient();
@@ -92,18 +94,20 @@ export function TeamBoard({
                   >
                     로그
                   </button>
-                  <button
-                    onClick={async () => {
-                      await supabase
-                        .from("participants")
-                        .update({ team_side: otherSide })
-                        .eq("id", player.id);
-                    }}
-                    className="text-xs text-muted hover:text-primary cursor-pointer"
-                    title={`상대팀으로 이동`}
-                  >
-                    ↔
-                  </button>
+                  {isActive && (
+                    <button
+                      onClick={async () => {
+                        await supabase
+                          .from("participants")
+                          .update({ team_side: otherSide })
+                          .eq("id", player.id);
+                      }}
+                      className="text-xs text-muted hover:text-primary cursor-pointer"
+                      title={`상대팀으로 이동`}
+                    >
+                      ↔
+                    </button>
+                  )}
                 </div>
               </div>
             );

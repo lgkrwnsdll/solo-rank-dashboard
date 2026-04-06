@@ -8,9 +8,10 @@ import { Spinner } from "../../spinner";
 interface Props {
   room: Room;
   onClose: () => void;
+  onSaved?: () => void;
 }
 
-export function RoomSettings({ room, onClose }: Props) {
+export function RoomSettings({ room, onClose, onSaved }: Props) {
   const [name, setName] = useState(room.name);
   const [targetScore, setTargetScore] = useState(room.target_score);
   const [teamAName, setTeamAName] = useState(room.team_a_name);
@@ -32,6 +33,7 @@ export function RoomSettings({ room, onClose }: Props) {
       })
       .eq("id", room.id);
     setSaving(false);
+    onSaved?.();
     onClose();
   };
 
