@@ -45,21 +45,22 @@ export function ProfileSection({ profile }: { profile: Profile | null }) {
             {showEmail ? "숨기기" : "보기"}
           </button>
         </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted w-16">닉네임</span>
+        <div className="flex items-center gap-2 text-sm min-w-0">
+          <span className="text-muted w-16 shrink-0">닉네임</span>
           {editing ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <input
                 type="text"
                 value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="bg-background border border-border rounded px-2 py-1 text-sm"
+                onChange={(e) => setDisplayName(e.target.value.slice(0, 64))}
+                maxLength={64}
+                className="bg-background border border-border rounded px-2 py-1 text-sm min-w-0 flex-1"
                 autoFocus
               />
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="text-primary text-sm hover:underline cursor-pointer"
+                className="text-primary text-sm hover:underline cursor-pointer shrink-0"
               >
                 {saving ? "저장중..." : "저장"}
               </button>
@@ -68,17 +69,17 @@ export function ProfileSection({ profile }: { profile: Profile | null }) {
                   setEditing(false);
                   setDisplayName(profile.display_name);
                 }}
-                className="text-muted text-sm hover:underline cursor-pointer"
+                className="text-muted text-sm hover:underline cursor-pointer shrink-0"
               >
                 취소
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <span>{displayName}</span>
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="truncate">{displayName}</span>
               <button
                 onClick={() => setEditing(true)}
-                className="text-primary text-sm hover:underline cursor-pointer"
+                className="text-primary text-sm hover:underline cursor-pointer shrink-0"
               >
                 수정
               </button>

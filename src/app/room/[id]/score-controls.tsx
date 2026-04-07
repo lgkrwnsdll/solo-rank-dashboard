@@ -77,13 +77,13 @@ export function ScoreControls({ participant, roomId, config }: Props) {
 
   return (
     <div className="bg-card rounded-lg p-5 border border-border">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">
+      <div className="flex items-center justify-between mb-4 gap-2">
+        <h3 className="font-semibold min-w-0 truncate">
           내 점수 ({participant.name || participant.email})
         </h3>
         <button
           onClick={handleToggleSleep}
-          className={`text-sm px-3 py-1 rounded-lg border transition-colors cursor-pointer ${
+          className={`text-sm px-3 py-1 rounded-lg border transition-colors cursor-pointer shrink-0 ${
             participant.is_sleeping
               ? "bg-warning/20 border-warning/30 text-warning"
               : "border-border text-muted hover:text-foreground"

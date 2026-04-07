@@ -61,16 +61,16 @@ export function TeamBoard({
             return (
               <div
                 key={player.id}
-                className={`flex items-center justify-between p-3 rounded-lg ${
+                className={`flex items-center justify-between p-3 rounded-lg gap-2 ${
                   isTop ? "bg-primary/10 border border-primary/30" : "bg-background"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted w-5">{idx + 1}</span>
-                  <div>
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <span className="text-sm text-muted w-5 shrink-0">{idx + 1}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 min-w-0">
                       <span
-                        className={`text-sm ${
+                        className={`text-sm truncate ${
                           player.id === myParticipantId
                             ? "font-bold"
                             : "font-medium"
@@ -82,10 +82,10 @@ export function TeamBoard({
                         )}
                       </span>
                       {player.is_sleeping && (
-                        <span className="text-xs text-muted">💤</span>
+                        <span className="text-xs text-muted shrink-0">💤</span>
                       )}
                       {streakInfo && (
-                        <span className="text-xs">
+                        <span className="text-xs whitespace-nowrap shrink-0">
                           {streakInfo.icon} {streakInfo.text}
                         </span>
                       )}
