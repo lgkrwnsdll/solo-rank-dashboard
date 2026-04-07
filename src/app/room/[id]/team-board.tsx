@@ -13,6 +13,7 @@ interface Props {
   roomId: string;
   config: RoomConfig;
   isActive: boolean;
+  myParticipantId: string | null;
 }
 
 export function TeamBoard({
@@ -23,6 +24,7 @@ export function TeamBoard({
   roomId,
   config,
   isActive,
+  myParticipantId,
 }: Props) {
   const [logPlayerId, setLogPlayerId] = useState<string | null>(null);
   const supabase = createClient();
@@ -67,8 +69,17 @@ export function TeamBoard({
                   <span className="text-sm text-muted w-5">{idx + 1}</span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">
+                      <span
+                        className={`text-sm ${
+                          player.id === myParticipantId
+                            ? "font-bold"
+                            : "font-medium"
+                        }`}
+                      >
                         {player.name || player.email}
+                        {player.id === myParticipantId && (
+                          <span className="text-xs text-muted ml-1">(나)</span>
+                        )}
                       </span>
                       {player.is_sleeping && (
                         <span className="text-xs text-muted">💤</span>

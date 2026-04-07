@@ -270,6 +270,7 @@ export function RoomView({
           roomId={room.id}
           config={room.config}
           isActive={room.status === "active"}
+          myParticipantId={myParticipant?.id ?? null}
         />
         <TeamBoard
           teamName={room.team_b_name}
@@ -279,6 +280,7 @@ export function RoomView({
           roomId={room.id}
           config={room.config}
           isActive={room.status === "active"}
+          myParticipantId={myParticipant?.id ?? null}
         />
       </div>
 
