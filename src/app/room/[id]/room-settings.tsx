@@ -42,6 +42,7 @@ export function RoomSettings({ room, onClose, onSaved }: Props) {
     key: string,
     point: number
   ) => {
+    if (point < 0 || point > 999 || isNaN(point)) return;
     setConfig((prev) => ({
       ...prev,
       [type]: {
@@ -84,16 +85,22 @@ export function RoomSettings({ room, onClose, onSaved }: Props) {
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value.slice(0, 50))}
+              maxLength={50}
               className="w-full bg-background border border-border rounded px-3 py-2 text-sm mt-1"
             />
           </div>
           <div>
-            <label className="text-xs text-muted">목표 점수</label>
+            <label className="text-xs text-muted">목표 점수 (1~100000)</label>
             <input
               type="number"
               value={targetScore}
-              onChange={(e) => setTargetScore(Number(e.target.value))}
+              min={1}
+              max={100000}
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                if (v >= 1 && v <= 100000) setTargetScore(v);
+              }}
               className="w-full bg-background border border-border rounded px-3 py-2 text-sm mt-1"
             />
           </div>
@@ -102,7 +109,8 @@ export function RoomSettings({ room, onClose, onSaved }: Props) {
             <input
               type="text"
               value={teamAName}
-              onChange={(e) => setTeamAName(e.target.value)}
+              onChange={(e) => setTeamAName(e.target.value.slice(0, 30))}
+              maxLength={30}
               className="w-full bg-background border border-border rounded px-3 py-2 text-sm mt-1"
             />
           </div>
@@ -111,7 +119,8 @@ export function RoomSettings({ room, onClose, onSaved }: Props) {
             <input
               type="text"
               value={teamBName}
-              onChange={(e) => setTeamBName(e.target.value)}
+              onChange={(e) => setTeamBName(e.target.value.slice(0, 30))}
+              maxLength={30}
               className="w-full bg-background border border-border rounded px-3 py-2 text-sm mt-1"
             />
           </div>
@@ -119,38 +128,42 @@ export function RoomSettings({ room, onClose, onSaved }: Props) {
 
         {/* Score Range */}
         <div>
-          <h4 className="text-sm font-medium mb-2">랜덤 점수 범위</h4>
+          <h4 className="text-sm font-medium mb-2">랜덤 점수 범위 (1~999)</h4>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="text-xs text-muted">승리</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
+                  min={1}
+                  max={999}
                   value={config.win_score_range.min}
-                  onChange={(e) =>
-                    setConfig((prev) => ({
-                      ...prev,
-                      win_score_range: {
-                        ...prev.win_score_range,
-                        min: Number(e.target.value),
-                      },
-                    }))
-                  }
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    if (v >= 1 && v <= 999) {
+                      setConfig((prev) => ({
+                        ...prev,
+                        win_score_range: { ...prev.win_score_range, min: v },
+                      }));
+                    }
+                  }}
                   className="w-20 bg-background border border-border rounded px-2 py-1 text-sm text-center"
                 />
                 <span className="text-muted">~</span>
                 <input
                   type="number"
+                  min={1}
+                  max={999}
                   value={config.win_score_range.max}
-                  onChange={(e) =>
-                    setConfig((prev) => ({
-                      ...prev,
-                      win_score_range: {
-                        ...prev.win_score_range,
-                        max: Number(e.target.value),
-                      },
-                    }))
-                  }
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    if (v >= 1 && v <= 999) {
+                      setConfig((prev) => ({
+                        ...prev,
+                        win_score_range: { ...prev.win_score_range, max: v },
+                      }));
+                    }
+                  }}
                   className="w-20 bg-background border border-border rounded px-2 py-1 text-sm text-center"
                 />
               </div>
@@ -160,31 +173,35 @@ export function RoomSettings({ room, onClose, onSaved }: Props) {
               <div className="flex items-center gap-2">
                 <input
                   type="number"
+                  min={1}
+                  max={999}
                   value={config.lose_score_range.min}
-                  onChange={(e) =>
-                    setConfig((prev) => ({
-                      ...prev,
-                      lose_score_range: {
-                        ...prev.lose_score_range,
-                        min: Number(e.target.value),
-                      },
-                    }))
-                  }
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    if (v >= 1 && v <= 999) {
+                      setConfig((prev) => ({
+                        ...prev,
+                        lose_score_range: { ...prev.lose_score_range, min: v },
+                      }));
+                    }
+                  }}
                   className="w-20 bg-background border border-border rounded px-2 py-1 text-sm text-center"
                 />
                 <span className="text-muted">~</span>
                 <input
                   type="number"
+                  min={1}
+                  max={999}
                   value={config.lose_score_range.max}
-                  onChange={(e) =>
-                    setConfig((prev) => ({
-                      ...prev,
-                      lose_score_range: {
-                        ...prev.lose_score_range,
-                        max: Number(e.target.value),
-                      },
-                    }))
-                  }
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    if (v >= 1 && v <= 999) {
+                      setConfig((prev) => ({
+                        ...prev,
+                        lose_score_range: { ...prev.lose_score_range, max: v },
+                      }));
+                    }
+                  }}
                   className="w-20 bg-background border border-border rounded px-2 py-1 text-sm text-center"
                 />
               </div>
@@ -204,6 +221,8 @@ export function RoomSettings({ room, onClose, onSaved }: Props) {
                   </span>
                   <input
                     type="number"
+                    min={0}
+                    max={999}
                     value={val.point}
                     onChange={(e) =>
                       updateStreakPoint(
@@ -237,6 +256,8 @@ export function RoomSettings({ room, onClose, onSaved }: Props) {
                   </span>
                   <input
                     type="number"
+                    min={0}
+                    max={999}
                     value={val.point}
                     onChange={(e) =>
                       updateStreakPoint(

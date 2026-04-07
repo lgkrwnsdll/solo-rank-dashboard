@@ -74,7 +74,8 @@ export function CreateRoomButton() {
           type="text"
           placeholder="방 이름"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setName(e.target.value.slice(0, 50))}
+          maxLength={50}
           className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm mb-4"
           autoFocus
           onKeyDown={(e) => e.key === "Enter" && handleCreate()}

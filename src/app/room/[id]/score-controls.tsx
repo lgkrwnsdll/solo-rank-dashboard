@@ -143,7 +143,7 @@ export function ScoreControls({ participant, roomId, config }: Props) {
         <button
           onClick={() => {
             const val = parseInt(customAmount);
-            if (!isNaN(val) && val > 0) {
+            if (!isNaN(val) && val > 0 && val <= 9999) {
               handleAdjust(-val);
               setCustomAmount("");
             }
@@ -155,15 +155,22 @@ export function ScoreControls({ participant, roomId, config }: Props) {
         </button>
         <input
           type="number"
+          min={1}
+          max={9999}
           value={customAmount}
-          onChange={(e) => setCustomAmount(e.target.value)}
-          placeholder="직접 입력"
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v === "" || (Number(v) >= 1 && Number(v) <= 9999)) {
+              setCustomAmount(v);
+            }
+          }}
+          placeholder="1~9999"
           className="w-24 bg-background border border-border rounded-lg px-3 py-1.5 text-sm text-center"
         />
         <button
           onClick={() => {
             const val = parseInt(customAmount);
-            if (!isNaN(val) && val > 0) {
+            if (!isNaN(val) && val > 0 && val <= 9999) {
               handleAdjust(val);
               setCustomAmount("");
             }
