@@ -28,8 +28,13 @@ export function InviteSection({ roomId, participants }: Props) {
       .map((e) => e.trim().toLowerCase())
       .filter((e) => e && e.includes("@"));
 
-    const existingEmails = new Set(participants.map((p) => p.email));
-    const newEmails = emailList.filter((e) => !existingEmails.has(e));
+    // Only block emails that are currently invited or accepted (declined can be re-invited)
+    const blockedEmails = new Set(
+      participants
+        .filter((p) => p.status !== "declined")
+        .map((p) => p.email)
+    );
+    const newEmails = emailList.filter((e) => !blockedEmails.has(e));
 
     if (newEmails.length === 0) {
       setMessage("모든 이메일이 이미 초대되었습니다.");
@@ -43,14 +48,41 @@ export function InviteSection({ roomId, participants }: Props) {
     if (!confirmEmails) return;
     setInviting(true);
 
-    const inserts = confirmEmails.map((email) => ({
-      room_id: roomId,
-      email,
-      name: email.split("@")[0],
-      status: "invited" as const,
-    }));
+    // Separate: existing declined records vs new emails
+    const declinedMap = new Map(
+      participants
+        .filter((p) => p.status === "declined")
+        .map((p) => [p.email, p.id])
+    );
 
-    const { error } = await supabase.from("participants").insert(inserts);
+    const newInserts = confirmEmails
+      .filter((email) => !declinedMap.has(email))
+      .map((email) => ({
+        room_id: roomId,
+        email,
+        name: email.split("@")[0],
+        status: "invited" as const,
+      }));
+
+    const reInviteIds = confirmEmails
+      .filter((email) => declinedMap.has(email))
+      .map((email) => declinedMap.get(email)!);
+
+    let error = null;
+    if (newInserts.length > 0) {
+      const { error: insertError } = await supabase
+        .from("participants")
+        .insert(newInserts);
+      if (insertError) error = insertError;
+    }
+
+    if (reInviteIds.length > 0) {
+      const { error: updateError } = await supabase
+        .from("participants")
+        .update({ status: "invited", user_id: null })
+        .in("id", reInviteIds);
+      if (updateError) error = updateError;
+    }
 
     if (error) {
       setMessage("초대 중 오류가 발생했습니다.");
