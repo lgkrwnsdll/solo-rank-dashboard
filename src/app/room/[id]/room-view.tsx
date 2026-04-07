@@ -96,14 +96,6 @@ export function RoomView({
     };
   }, [supabase, room.id, refreshParticipants, refreshRoom]);
 
-  // Polling fallback: refresh every 3 seconds to ensure data is up to date
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshParticipants();
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [refreshParticipants]);
-
   // Not invited and not host
   if (!isHost && !myParticipant && !isInvited) {
     return <BlockedView />;
