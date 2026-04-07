@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Participant, RoomConfig } from "@/lib/types";
 import { ADJUST_PRESETS } from "@/lib/constants";
@@ -16,108 +16,55 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getStreakBonus(
-  streak: number,
-  streakConfig: Record<string, { point: number; enabled: boolean }>
-): number {
-  const absStreak = Math.abs(streak);
-  // For 10+, use the "10" config
-  const key = absStreak >= 10 ? "10" : String(absStreak);
-  const config = streakConfig[key];
-  if (!config || !config.enabled) return 0;
-  return config.point;
-}
-
 export function ScoreControls({ participant, roomId, config }: Props) {
   const [customAmount, setCustomAmount] = useState("");
   const [processing, setProcessing] = useState(false);
+  const processingRef = useRef(false);
   const supabase = createClient();
 
   const handleResult = async (type: "win" | "lose") => {
-    if (processing) return;
+    // Synchronous check via ref - blocks rapid clicks before React re-render
+    if (processingRef.current) return;
+    processingRef.current = true;
     setProcessing(true);
 
     const range =
       type === "win" ? config.win_score_range : config.lose_score_range;
     const basePoints = getRandomInt(range.min, range.max);
-    const sign = type === "win" ? 1 : -1;
 
-    // Calculate new streak
-    const currentStreak = participant.streak;
-    let newStreak: number;
-    if (type === "win") {
-      newStreak = currentStreak > 0 ? currentStreak + 1 : 1;
-    } else {
-      newStreak = currentStreak < 0 ? currentStreak - 1 : -1;
-    }
-
-    // Calculate streak bonus
     const streakConfig =
       type === "win" ? config.win_streak : config.lose_streak;
-    const bonus = getStreakBonus(newStreak, streakConfig);
 
-    const totalChange = basePoints * sign + (bonus > 0 ? bonus * sign : 0);
-
-    // Update participant with stats
-    const totalPositive = type === "win" ? basePoints + bonus : 0;
-    const totalNegative = type === "lose" ? basePoints + bonus : 0;
-
-    await supabase
-      .from("participants")
-      .update({
-        score: participant.score + totalChange,
-        streak: newStreak,
-        wins: participant.wins + (type === "win" ? 1 : 0),
-        losses: participant.losses + (type === "lose" ? 1 : 0),
-        total_gained: participant.total_gained + totalPositive,
-        total_lost: participant.total_lost + totalNegative,
-      })
-      .eq("id", participant.id);
-
-    // Log base score
-    await supabase.from("score_logs").insert({
-      room_id: roomId,
-      player_id: participant.id,
-      amount: basePoints * sign,
-      reason: type,
-      detail: `${type === "win" ? "승리" : "패배"} ${sign > 0 ? "+" : ""}${basePoints * sign}`,
+    const { error } = await supabase.rpc("record_match", {
+      p_participant_id: participant.id,
+      p_type: type,
+      p_base_points: basePoints,
+      p_streak_config: streakConfig,
     });
 
-    // Log streak bonus if applicable
-    if (bonus > 0) {
-      await supabase.from("score_logs").insert({
-        room_id: roomId,
-        player_id: participant.id,
-        amount: bonus * sign,
-        reason: type === "win" ? "streak_bonus" : "streak_penalty",
-        detail: `${Math.abs(newStreak)}${type === "win" ? "연승 보너스" : "연패 감점"} ${sign > 0 ? "+" : ""}${bonus * sign}`,
-      });
+    if (error) {
+      console.error("record_match error:", error);
     }
 
+    processingRef.current = false;
     setProcessing(false);
   };
 
   const handleAdjust = async (amount: number) => {
-    if (processing || amount === 0) return;
+    if (processingRef.current || amount === 0) return;
+    processingRef.current = true;
     setProcessing(true);
 
-    await supabase
-      .from("participants")
-      .update({
-        score: participant.score + amount,
-        total_gained: participant.total_gained + (amount > 0 ? amount : 0),
-        total_lost: participant.total_lost + (amount < 0 ? Math.abs(amount) : 0),
-      })
-      .eq("id", participant.id);
-
-    await supabase.from("score_logs").insert({
-      room_id: roomId,
-      player_id: participant.id,
-      amount,
-      reason: "manual",
-      detail: `수동 ${amount > 0 ? "+" : ""}${amount}`,
+    const { error } = await supabase.rpc("adjust_score", {
+      p_participant_id: participant.id,
+      p_amount: amount,
     });
 
+    if (error) {
+      console.error("adjust_score error:", error);
+    }
+
+    processingRef.current = false;
     setProcessing(false);
   };
 
