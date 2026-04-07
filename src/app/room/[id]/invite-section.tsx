@@ -8,9 +8,10 @@ import { Spinner } from "../../spinner";
 interface Props {
   roomId: string;
   participants: Participant[];
+  onChanged?: () => void;
 }
 
-export function InviteSection({ roomId, participants }: Props) {
+export function InviteSection({ roomId, participants, onChanged }: Props) {
   const [emails, setEmails] = useState("");
   const [inviting, setInviting] = useState(false);
   const [message, setMessage] = useState("");
@@ -89,6 +90,7 @@ export function InviteSection({ roomId, participants }: Props) {
     } else {
       setMessage(`${confirmEmails.length}명 초대 완료`);
       setEmails("");
+      onChanged?.();
     }
     setConfirmEmails(null);
     setInviting(false);
@@ -97,6 +99,7 @@ export function InviteSection({ roomId, participants }: Props) {
   const handleKick = async (participantId: string) => {
     if (!confirm("이 참가자를 강퇴하시겠습니까?")) return;
     await supabase.from("participants").delete().eq("id", participantId);
+    onChanged?.();
   };
 
   return (

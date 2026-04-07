@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Room } from "@/lib/types";
+import { Spinner } from "../../spinner";
 
 interface Props {
   room: Room;
@@ -18,9 +20,13 @@ export function InvitePrompt({
   displayName,
   onAccepted,
 }: Props) {
+  const [accepting, setAccepting] = useState(false);
+  const [declining, setDeclining] = useState(false);
   const supabase = createClient();
 
   const handleAccept = async () => {
+    if (accepting || declining) return;
+    setAccepting(true);
     await supabase
       .from("participants")
       .update({
@@ -34,6 +40,8 @@ export function InvitePrompt({
   };
 
   const handleDecline = async () => {
+    if (accepting || declining) return;
+    setDeclining(true);
     await supabase
       .from("participants")
       .update({ status: "declined", user_id: userId })
@@ -56,15 +64,17 @@ export function InvitePrompt({
         <div className="flex gap-3 justify-center">
           <button
             onClick={handleAccept}
-            className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-2 rounded-lg transition-colors cursor-pointer"
+            disabled={accepting || declining}
+            className="bg-primary hover:bg-primary-hover disabled:opacity-50 text-white font-medium px-6 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2"
           >
-            참여
+            {accepting ? <><Spinner /> 참여중...</> : "참여"}
           </button>
           <button
             onClick={handleDecline}
-            className="bg-card border border-border text-muted hover:text-foreground font-medium px-6 py-2 rounded-lg transition-colors cursor-pointer"
+            disabled={accepting || declining}
+            className="bg-card border border-border disabled:opacity-50 text-muted hover:text-foreground font-medium px-6 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2"
           >
-            거절
+            {declining ? <><Spinner /> 거절중...</> : "거절"}
           </button>
         </div>
       </div>

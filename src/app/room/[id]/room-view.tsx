@@ -109,7 +109,7 @@ export function RoomView({
         userEmail={userEmail}
         userId={userId}
         displayName={profile?.display_name ?? userEmail}
-        onAccepted={() => router.refresh()}
+        onAccepted={refreshParticipants}
       />
     );
   }
@@ -253,7 +253,11 @@ export function RoomView({
 
       {/* Host: Invite Section */}
       {isHost && inviteOpen && (
-        <InviteSection roomId={room.id} participants={participants} />
+        <InviteSection
+          roomId={room.id}
+          participants={participants}
+          onChanged={refreshParticipants}
+        />
       )}
 
       {/* Team Boards */}
